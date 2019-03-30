@@ -31,7 +31,17 @@ func (r *ReadySet) Lap() time.Duration {
 	return prevLap.Sub(r.lap)
 }
 
+// LapAs an int64 rounded to the required precision
+func (r *ReadySet) LapAs(precision time.Duration) int64 {
+	return int64(r.Lap() / precision)
+}
+
 // Stop the timer and return the total elapsed time as a Duration
 func (r *ReadySet) Stop() time.Duration {
 	return time.Now().Sub(r.start)
+}
+
+// StopAs an int64 rounded to the required precision
+func (r *ReadySet) StopAs(precision time.Duration) int64 {
+	return int64(r.Stop() / precision)
 }
