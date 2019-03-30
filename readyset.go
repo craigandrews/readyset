@@ -1,21 +1,37 @@
 package readyset
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 // ReadySet is the basic timer type of readyset.go
-type ReadySet *time.Time
+type ReadySet struct {
+	start time.Time
+	lap   time.Time
+	mux   sync.Mutex
+}
 
 // Go starts a new timer
-func Go() ReadySet {
-	return &time.Now()
+func Go() *ReadySet {
+	now := time.Now()
+	return &ReadySet{
+		start: now,
+		lap:   now,
+	}
 }
 
 // Lap time as a Duration
-func (r ReadySet) Lap() time.Duration {
-	return time(*r).Sub(time.Now())
+func (r *ReadySet) Lap() time.Duration {
+	r.mux.Lock()
+	defer r.mux.Unlock()
+
+	prevLap := r.lap
+	r.lap = time.Now()
+	return prevLap.Sub(r.lap)
 }
 
-// Stop the timer and return the integer value rounded to the required precision (e.g. time.Millisecond)
-func (r ReadySet) Stop(precision time.Duration) int64 {
-	return int(r.Lap() / precision)
+// Stop the timer and return the total elapsed time as a Duration
+func (r *ReadySet) Stop() time.Duration {
+	return time.Now().Sub(r.start)
 }
