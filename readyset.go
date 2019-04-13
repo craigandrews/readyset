@@ -28,7 +28,7 @@ func (r *ReadySet) Lap() time.Duration {
 
 	prevLap := r.lap
 	r.lap = time.Now()
-	return prevLap.Sub(r.lap)
+	return r.lap.Sub(prevLap)
 }
 
 // LapAs an int64 rounded to the required precision
